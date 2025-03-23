@@ -11,7 +11,7 @@ restaurantRouter.get('/', async(req, res, next) => {
   }
 })
 
-//create customer
+//create restaurant
 restaurantRouter.post('/', async(req, res, next) => {
   console.log("body is", req.body)
   try {

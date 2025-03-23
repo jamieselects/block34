@@ -2,87 +2,25 @@ const express = require('express')
 const morgan = require('morgan')
 const app = express();
 const customerRouter = require('./api/customer')
+const restaurantRouter = require('./api/restaurant')
+const reservationRouter = require('./api/reservation')
+
+
+//middleware
+app.use(morgan('dev'));
+app.use(express.json());
 
 app.use('/api/customers', customerRouter)
+app.use('/api/restaurants', restaurantRouter)
+app.use('/api/customers/:customer_id/reservations', reservationRouter)
 
 const {
   client,
   createTables,
   createCustomer,
   createRestaurant,
-  fetchRestaurants,
   createReservation,
-  destroyReservation,
-  fetchReservations,
 } = require("./db");
-
-
-//middleware
-app.use(morgan('dev'));
-app.use(express.json());
-//fetch customers
-// app.get('/api/customers', async(req, res, next) => {
-//   try {
-//     res.send(await fetchCustomers())
-//   } catch (error) {
-//     next(error)
-//   }
-// })
-
-///fetch restaurants
-app.get('/api/restaurants', async(req, res, next) => {
-  try {
-    res.send(await fetchRestaurants())
-  } catch (error) {
-    next(error)
-  }
-})
-
-//fetech reservations
-app.get('/api/reservations', async(req, res, next) => {
-  try {
-    res.send(await fetchReservations())
-  } catch (error) {
-    next(error)
-  }
-})
-
-//create customer
-app.post('/api/customers', async(req, res, next) => {
-  console.log("body is", req.body)
-  try {
-    res.send(await createCustomer({
-      name: req.body.name
-    }))
-  } catch (error) {
-    next(error)
-  }
-})
-
-//create reservation
-app.post('/api/customers/:id/reservations', async(req, res,next) => {
-  try {
-    res.status(201).send(await createReservation({
-      customer_id: req.params.customer_id,
-      restaurant_id: req.body.restaurant_id,
-      date: req.body.date
-    }))
-  } catch (error) {
-    next(error)
-  }
-})
-
-app.delete('/api/customers/:customer_id/reservations/:reservation_id', async(req, res,next) => {
-  try {
-    res.status(204).send(await destroyReservation({
-      customer_id: req.params.customer_id,
-      restaurant_id: req.body.restaurant_id,
-      date: req.body.date
-    }))
-  } catch (error) {
-    next(error)
-  }
-})
 
 //middleware
 app.use(morgan('dev'));
@@ -110,9 +48,9 @@ const init = async () => {
     // 
   ]);
 
-    await createReservation({ customer_id: moe.id, restaurant_id: butter.id, date:"03/27/2025", party_count: "4"}),
+  await createReservation({ customer_id: moe.id, restaurant_id: butter.id, date:"03/27/2025", party_count: "4"}),
 
-    console.log("moe is", moe)
+  console.log("moe is", moe)
 
   const port = process.env.PORT || 3000;
   app.listen(port, ()=> {
